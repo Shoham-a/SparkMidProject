@@ -18,6 +18,7 @@ kafka_message_schema = StructType([
 ])
 
 # read sensors-sample topic from kafka
+# TODO: fix data loss
 events_df = spark_session.readStream \
     .format("kafka") \
     .option("kafka.bootstrap.servers", "course-kafka:9092") \
