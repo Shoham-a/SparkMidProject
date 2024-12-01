@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from pyspark.sql import col, rand, current_timestamp
+import pyspark.sql.functions as F
 from pyspark.sql.types import StructType, StructField, IntegerType, LongType
 from time import sleep
 
@@ -31,12 +31,12 @@ MAX_GEAR = 6
 
 while True:
     # generate events values
-    events = generated_cars.select(col('car_id').cast("int")) \
-        .withColumn('event_id', round(rand() * 10000000).cast("int")) \
-        .withColumn('event_time', current_timestamp()) \
-        .withColumn('speed', round(rand() * MAX_SPEED).cast("int")) \
-        .withColumn('rpm', round(rand() * MAX_RPM).cast("int")) \
-        .withColumn('gear', (round(rand() * MAX_GEAR) + 1).cast("int"))
+    events = generated_cars.select(F.col('car_id').cast("int")) \
+        .withColumn('event_id', F.round(F.rand() * 10000000).cast("int")) \
+        .withColumn('event_time', F.current_timestamp()) \
+        .withColumn('speed', F.round(F.rand() * MAX_SPEED).cast("int")) \
+        .withColumn('rpm', F.round(F.rand() * MAX_RPM).cast("int")) \
+        .withColumn('gear', (F.round(F.rand() * MAX_GEAR) + 1).cast("int"))
 
     # kafka iterates each df's row, applying 'struct(*)' to each row, then it converts it to json and send it to kafka
     events.selectExpr("to_json(struct(*)) AS value")  \
